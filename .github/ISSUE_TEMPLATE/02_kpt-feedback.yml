@@ -1,0 +1,30 @@
+name: KPTフィードバック
+description: プロトタイプ（モック）を触った感想をKPT形式で記入してください
+title: "[KPT] "
+labels: ["kpt-feedback"]
+body:
+  - type: input
+    id: target
+    attributes:
+      label: 対象プロトタイプ
+      description: 対象のIssue番号またはPRリンク
+    validations:
+      required: true
+  - type: textarea
+    id: keep
+    attributes:
+      label: Keep（良かった点・維持すべき点）
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem（課題・不足していた点・誤解した点）
+    validations:
+      required: true
+  - type: textarea
+    id: try
+    attributes:
+      label: Try（次に試すべき改善案・追加要望）
+    validations:
+      required: true

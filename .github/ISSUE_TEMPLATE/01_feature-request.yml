@@ -1,0 +1,36 @@
+name: 機能要望 (Feature Request)
+description: プロトタイプ作成の起点となる、シンプルな要望を記入してください
+title: "[要望] "
+labels: ["feature-request"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: やりたいこと
+      description: 実現したいことを簡潔に記述してください
+    validations:
+      required: true
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景
+      description: なぜこれが必要か、どんな状況で困っているか
+    validations:
+      required: false
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: 除外してよい範囲
+      description: 今回のプロトタイプでは対応しなくてよい範囲があれば記述してください
+    validations:
+      required: false
+  - type: dropdown
+    id: scale
+    attributes:
+      label: 規模
+      description: light=KPTのみで完結可（spec.md省略）/ full=本フロー全体を実施
+      options:
+        - light
+        - full
+    validations:
+      required: true
