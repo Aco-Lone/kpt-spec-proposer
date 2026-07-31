@@ -1,3 +1,8 @@
+---
+name: spec-template
+description: システム非依存の spec.md フォーマット定義。spec-writer が仕様化承認後に spec.md を生成・更新するときに参照する。特定のSDDツール（Jira記法・OpenAPI専用構文等）に依存しないMarkdown見出し構造のみを使う。
+---
+
 # skill: spec-template
 
 システム非依存のspec.mdフォーマット定義。特定のSDDツール（Jira記法、OpenAPI専用構文等）に依存しないMarkdown見出し構造のみを使用する。
