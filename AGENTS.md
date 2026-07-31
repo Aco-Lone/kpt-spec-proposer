@@ -51,6 +51,12 @@ spec.md確定は「ゴール」ではなく「その時点のスナップショ�
 - 未解決の曖昧点がない
 - Keepの割合がProblemを上回っている
 
+## ラウンド番号とKPT生ログ
+
+- **feature-name**: 成果物の集約先ディレクトリ名。要望Issue（`01_feature-request.yml`）の「機能名（feature-name）」で指定し、`prototype-agent`が最初のセッションで`docs/specs/<feature-name>/request.md`に記録する。KPT Issue（`02_kpt-feedback.yml`）は同じfeature-nameを指定して対応づける。
+- **ラウンド番号 N**: `docs/specs/<feature-name>/kpt-log/`内の既存`roundN.md`の最大番号+1とする。最初のKPTはRound1。
+- **生ログの保存責務**: `kpt-agent`は集約に先立ち、記入されたKPTの生テキストを`kpt-log/roundN.md`として保存してから集約する。生ログは要約後も削除・改変しない。
+
 ## ディレクトリ規約
 
 成果物は必ず `docs/specs/<feature-name>/` 配下に集約する。ファイル構成は各エージェント定義ファイルを参照。

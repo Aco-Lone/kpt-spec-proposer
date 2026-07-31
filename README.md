@@ -27,15 +27,15 @@ AGENTS.md                        リポジトリ全体のベース方針、エ�
     kpt-agent.md                 KPT集約 + 曖昧点抽出 + 改善提案 + ループ判定
     spec-writer.md               仕様化承認後にのみ起動し spec.md を生成
   skills/
-    mock-scaffolding.md          モック実装時の簡略化ルール
-    kpt-parsing.md               KPTの抽出・分類ロジック
-    ambiguity-detection.md       曖昧点の判定ロジック
-    readiness-check.md           「継続プロトタイピング」か「仕様化」かの判定材料
-    spec-template.md             システム非依存のspec.mdフォーマット
-    change-history-logging.md    ラウンドごとの変更履歴の追記ルール
+    mock-scaffolding/SKILL.md        モック実装時の簡略化ルール
+    kpt-parsing/SKILL.md             KPTの抽出・分類・生ログ保存ロジック
+    ambiguity-detection/SKILL.md     曖昧点の判定ロジック
+    readiness-check/SKILL.md         「継続プロトタイピング」か「仕様化」かの判定材料
+    spec-template/SKILL.md           システム非依存のspec.mdフォーマット
+    change-history-logging/SKILL.md  ラウンドごとの変更履歴の追記ルール
   ISSUE_TEMPLATE/
-    01_feature-request.yml       要望入力（規模light/fullを選択）
-    02_kpt-feedback.yml          KPT記入フォーム
+    01_feature-request.yml       要望入力（feature-name・規模light/fullを選択）
+    02_kpt-feedback.yml          KPT記入フォーム（feature-nameで対応づけ）
 
 docs/
   process/

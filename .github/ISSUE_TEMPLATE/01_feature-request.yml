@@ -3,6 +3,13 @@ description: プロトタイプ作成の起点となる、シンプルな要望�
 title: "[要望] "
 labels: ["feature-request"]
 body:
+  - type: input
+    id: feature-name
+    attributes:
+      label: 機能名（feature-name）
+      description: 成果物ディレクトリ docs/specs/<feature-name>/ に使う識別子。半角英数字とハイフンで簡潔に（例 color-theme-setting）
+    validations:
+      required: true
   - type: textarea
     id: what
     attributes:

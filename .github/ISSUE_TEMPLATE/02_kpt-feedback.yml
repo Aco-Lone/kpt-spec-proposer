@@ -4,6 +4,13 @@ title: "[KPT] "
 labels: ["kpt-feedback"]
 body:
   - type: input
+    id: feature-name
+    attributes:
+      label: 機能名（feature-name）
+      description: 対象の要望Issueで指定した feature-name（docs/specs/<feature-name>/ に対応）
+    validations:
+      required: true
+  - type: input
     id: target
     attributes:
       label: 対象プロトタイプ
