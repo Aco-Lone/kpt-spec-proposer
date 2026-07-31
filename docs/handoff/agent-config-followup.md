@@ -76,11 +76,11 @@ disable-model-invocation: true
 
 ## 完了条件（Definition of Done）
 
-- [ ] 3エージェントのスキル参照がすべて `.github/skills/<name>/SKILL.md` になっている（壊れた旧パス参照が残っていない）。
-- [ ] `spec-writer` に `disable-model-invocation: true` が設定されている。
-- [ ] 各エージェントの `tools` が責務に対して過不足ない。
-- [ ] 各エージェントに `description` が存在する。
-- [ ] AGENTS.md の責任分界（prototype/kpt/spec-writer の越境禁止、人間承認必須）と矛盾しない。
+- [x] 3エージェントのスキル参照がすべて `.github/skills/<name>/SKILL.md` になっている（壊れた旧パス参照が残っていない）。
+- [x] `spec-writer` に `disable-model-invocation: true` が設定されている。
+- [x] 各エージェントの `tools` が責務に対して過不足ない。
+- [x] 各エージェントに `description` が存在する。
+- [x] AGENTS.md の責任分界（prototype/kpt/spec-writer の越境禁止、人間承認必須）と矛盾しない。
 
 ## 参考
 

@@ -1,5 +1,5 @@
 name: KPTフィードバック
-description: プロトタイプ（モック）を触った感想をKPT形式で記入してください
+description: スプレッドシートで管理したKPTのCSVを取り込むためのIssueです
 title: "[KPT] "
 labels: ["kpt-feedback"]
 body:
@@ -17,21 +17,17 @@ body:
       description: 対象のIssue番号またはPRリンク
     validations:
       required: true
-  - type: textarea
-    id: keep
+  - type: input
+    id: csv-path
     attributes:
-      label: Keep（良かった点・維持すべき点）
+      label: KPT CSV のパス
+      description: スプレッドシートから書き出し、コミットしたCSVのパス（例 docs/specs/<feature-name>/kpt-log/round2.csv）。カラムは 種別,機能カテゴリ,内容,状態。IDはagentが集約時に付与するため不要。
     validations:
       required: true
   - type: textarea
-    id: problem
+    id: kpt-csv
     attributes:
-      label: Problem（課題・不足していた点・誤解した点）
+      label: KPT CSV（任意・貼り付け）
+      description: CSVをコミットする代わりに、ここに直接貼り付けても取り込めます。1行目はヘッダ（種別,機能カテゴリ,内容,状態）。
     validations:
-      required: true
-  - type: textarea
-    id: try
-    attributes:
-      label: Try（次に試すべき改善案・追加要望）
-    validations:
-      required: true
+      required: false

@@ -31,13 +31,3 @@ body:
       description: 今回のプロトタイプでは対応しなくてよい範囲があれば記述してください
     validations:
       required: false
-  - type: dropdown
-    id: scale
-    attributes:
-      label: 規模
-      description: light=KPTのみで完結可（spec.md省略）/ full=本フロー全体を実施
-      options:
-        - light
-        - full
-    validations:
-      required: true

@@ -9,7 +9,7 @@
 ```
 要望Issue
    → prototype-agent（モック生成）
-   → 人間がKPT記入
+   → 人間がKPTをスプレッドシートで管理しCSVを取り込み
    → kpt-agent（集約・曖昧点質問・改善提案・ループ判定）
    → 「継続プロトタイピング」なら prototype-agent に戻る
    → 「仕様化」なら人間承認を経て spec-writer が spec.md を生成
@@ -34,19 +34,19 @@ AGENTS.md                        リポジトリ全体のベース方針、エ�
     spec-template/SKILL.md           システム非依存のspec.mdフォーマット
     change-history-logging/SKILL.md  ラウンドごとの変更履歴の追記ルール
   ISSUE_TEMPLATE/
-    01_feature-request.yml       要望入力（feature-name・規模light/fullを選択）
-    02_kpt-feedback.yml          KPT記入フォーム（feature-nameで対応づけ）
+    01_feature-request.yml       要望入力（feature-nameを指定）
+    02_kpt-feedback.yml          KPT取り込み（スプレッドシートのCSVをコミット・貼付け、feature-nameで対応づけ）
 
 docs/
   process/
     prototype-driven-flow.md     GitHubに依存しないプロセス手順書（可搬性のため）
   specs/
     <feature-name>/
-      request.md                 元の要望・規模フラグ
+      request.md                 元の要望
       prototype-notes.md         ラウンドごとの変更点・簡略化点（追記蓄積）
-      kpt-log/roundN.md          KPTの生ログ（要約後も削除・改変しない）
-      kpt-summary.md             kpt-agentによる集約結果（毎ラウンド更新）
-      clarification-log.md       曖昧点の質問と回答（fullのみ）
+      kpt-log/roundN.csv         KPTの生ログ（スプレッドシートから取り込んだCSV。削除・改変しない）
+      kpt-summary.md             kpt-agentによる集約結果（Markdown表形式＋ID、毎ラウンド更新）
+      clarification-log.md       曖昧点の質問と回答（曖昧点がある場合）
       spec.md                    仕様化承認後にのみ生成
 ```
 
@@ -68,9 +68,13 @@ Coding Agentは同期対話ではなく、Issueコメント→セッション再
 
 KPTからの改善提案は、プロトタイプでさらに検証すべきものと、仕様として確定してよいものが混在します。`kpt-agent`が「仕様化してよい」と判断した内容を自動でそのまま`spec-writer`に渡してspec.mdを確定させてしまうと、検証不足のまま仕様が固まるリスクがあります。そのため`kpt-agent`はあくまで判定結果（readiness-checkの材料）を提示するだけにとどめ、`spec-writer`の起動は必ず人間の明示的なアクションを挟む設計にしています。
 
-### なぜ規模フラグ（light/full）を設けたか
+### なぜKPTを表形式＋機能カテゴリIDで管理するか
 
-全ての要望に対してKPTログ・曖昧点ログ・spec.mdまでのフルセットを要求すると、「ボタンの色を変えたい」程度の小さな要望にもプロセスが重くのしかかり、結果的に運用されなくなるリスクがあります。そのため要望Issue作成時点で規模を選択し、小さな要望は`kpt-summary.md`までで完結する軽量パスを用意しました。
+KPTの項目を文章のまま蓄積すると、ラウンドをまたいだ同一論点の追跡が文面の照合に依存し、収束判定（readiness-check）が不安定になります。そこで集約結果を`ID | 種別 | 機能カテゴリ | 内容 | 状態`の表にし、各項目に安定IDを付与しました。IDの接頭辞は「Keep/Problem/Tryの種別」ではなく「機能カテゴリ（プロトタイプの機能領域）」とし、同じ機能領域のフィードバックをラウンド横断でまとめられるようにしています。IDは集約時に付与し、人間の入力（生ログ・KPTのCSV）には振らないことで、人間の記述負荷を増やさずに追跡性を得ています。
+
+### なぜKPTをスプレッドシート管理＋CSV取り込みにしたか
+
+KPTは既存のスプレッドシートで管理しているチームが多く、その運用に合わせて「スプレッドシートで管理→CSVで取り込む」方式を採用しました。入力CSVのカラムは `種別,機能カテゴリ,内容,状態`で、IDは含めません（集約時にagentが付与）。現在の優先方法は `docs/specs/<feature-name>/kpt-log/roundN.csv` へのコミットで、このファイルがそのまま生ログになります。将来的にIssueフォームへのCSV貼り付けに切り替えられるよう、取得元に依らずCSV本体を入力として扱います。一方で集約結果（`kpt-summary.md`）は、GitHub上で表として読めてreadiness-checkの人間レビューに有利なためMarkdown表のままにしています。
 
 ### なぜspec.mdをシステム非依存のMarkdown形式にしたか
 
