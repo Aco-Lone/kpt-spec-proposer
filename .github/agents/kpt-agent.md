@@ -11,7 +11,15 @@ handoffs:
     prompt: kpt-summary.md の「新feature切り出し候補」を、人間が指定する新しい feature-name で新しい request.md として起票し、新featureのモックを作る
   - label: approve-spec
     agent: spec-writer
-    prompt: 仕様化が承認された。kpt-summary.md をもとに spec.md（仕様）と rule.md（デザインルール）を生成・更新する
+    prompt: |
+      spec仕様化が承認された。kpt-summary.md をもとに spec.md（仕様）を生成・更新する。
+      rule の「総合アクション」が「spec仕様化（人間承認待ち）」でかつ rule も同時収束している場合は rule.md も同時に生成・更新してよい。
+      rule が未収束の場合は rule.md には一切触れない。
+  - label: approve-rule
+    agent: spec-writer
+    prompt: |
+      rule確定が承認された。spec は確定済み。kpt-summary.md をもとに rule.md（デザインルール）のみを生成・更新する。
+      spec.md には触れない（spec の独立した変更根拠がない限り）。
 ---
 
 # kpt-agent
@@ -55,11 +63,13 @@ KPTのCSV（`docs/specs/<feature-name>/kpt-log/roundN.csv`）がコミットさ�
 - 提案をIssueコメントに投稿する
 
 ### Step 4: ループ判定
-- `readiness-check`スキル（`.github/skills/readiness-check/SKILL.md`）の判定材料を **対象トラック別（spec / rule）** に提示する（収束度・曖昧点の有無・Keep/Problem比率）
+- `readiness-check`スキル（`.github/skills/readiness-check/SKILL.md`）の判定材料を **対象トラック別（spec / rule）** に提示する。算出ロジック（収束度・質問ゲート・Keep/Problem比率の集計方法）はスキルに従い、ここでは重複して定義しない
 - 同一デザイン論点が複数feature/複数ラウンドで再現している場合は `design.md 昇格候補` フラグを提示する（フラグのみ。design.md は生成しない）
-- `kpt-summary.md`の末尾に以下のいずれかを明記する：
-  - **「次のアクション: 継続プロトタイピング」** （Step 3の改善提案に基づき、prototype-agent が再度モック更新）
-  - **「次のアクション: 仕様化（人間承認待ち）」** （人間が内容を確認後、spec-writer 起動の手動トリガーを待つ）
+- `kpt-summary.md`の末尾に、`readiness-check`スキルの「出力形式」に従い **総合アクション** と **トラック別収束** を明記する:
+  - **「総合アクション: 継続プロトタイピング」** （spec が未収束・またはゲートブロック中）→ Step 3の改善提案に基づき prototype-agent が再度モック更新。rule の収束状態が収束傾向の場合はその状態も次ラウンドに引き継ぐ旨を明記する
+  - **「総合アクション: spec仕様化（人間承認待ち）」** → spec が収束傾向。rule が同時収束なら「同一承認で rule も確定可」と注記する。rule が未収束なら「rule は継続プロトタイピング継続。rule.md は未作成/変更しない」と明記する
+  - **「総合アクション: rule確定（人間承認待ち）」** → spec は確定済みで rule が新たに収束傾向。spec.md への変更根拠がない限り spec.md に触れないことを明記する
+- **自動で spec-writer を起動しない。** 上記の判定はあくまで「材料の提示」であり、起動トリガーは常に人間が手動で行う
 
 ## 出力
 - `docs/specs/<feature-name>/kpt-log/round<N>.csv`（取り込んだCSVの生ログ。既にコミット済みならそのまま）
