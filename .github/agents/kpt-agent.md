@@ -43,12 +43,10 @@ KPTのCSV（`docs/specs/<feature-name>/kpt-log/roundN.csv`）がコミットさ�
   - 対象（spec/rule）判別不能（デフォルト規則で決められず真にどちらとも取れる）
   - 既存 `rule.md` との矛盾（改善提案が確定済みデザインルールと衝突する）
 - 曖昧点が見つかった場合:
-  - 優先度順に最大5件まで絞る
-  - 可能なら選択式（A/B など）の質問にする
-  - 質問をIssueコメントにまとめて投稿する。対象がKPT表の特定項目に対応する場合は該当IDを明示する（例: `theme-1について`）
-  - `docs/specs/<feature-name>/clarification-log.md`に質問内容を記録する
-  - `kpt-summary.md`の末尾に「**次のアクション: 回答待ち**」と明記する
-  - **このセッションはここで終了** → 人間の回答を待つ
+  - 質問の生成・グループ化・投稿方法はすべて`ambiguity-detection`スキル（`.github/skills/ambiguity-detection/SKILL.md`）の「質問生成ルール」に従う（件数上限なし、論点IDでグループ化・重複マージ）
+  - `docs/specs/<feature-name>/clarification-log.md`に全質問を記録する（スキルの「clarification-log.md の仕様」に従ったテーブル形式）
+  - `kpt-summary.md`の末尾に未解消の曖昧点件数を対象トラック別（spec / rule / global）に明記し、「**次のアクション: 回答待ち**」を記載する
+  - **すべての質問の投稿が完了するまでセッションを終了しない。** 投稿完了後にセッションを終了し、人間の回答を待つ
 
 ### Step 3: 改善提案（曖昧点がない場合のみ）
 - Try を起点に、優先度付きの改善提案を作成する
@@ -66,7 +64,7 @@ KPTのCSV（`docs/specs/<feature-name>/kpt-log/roundN.csv`）がコミットさ�
 ## 出力
 - `docs/specs/<feature-name>/kpt-log/round<N>.csv`（取り込んだCSVの生ログ。既にコミット済みならそのまま）
 - `docs/specs/<feature-name>/kpt-summary.md`（上書き更新。機能カテゴリ凡例＋KPT表＋詳細節、末尾に次のアクション明記）
-- `docs/specs/<feature-name>/clarification-log.md`（曖昧点がある場合のみ）
+- `docs/specs/<feature-name>/clarification-log.md`（曖昧点がある場合のみ。`ambiguity-detection`スキルの「clarification-log.md の仕様」に従った `質問ID | 論点ID | 対象トラック | 質問 | 選択肢 | 回答 | Status | 質問ラウンド | 解消ラウンド` テーブル形式）
 
 ## 禁止事項
 - 曖昧点が残った状態で改善提案に進まない
