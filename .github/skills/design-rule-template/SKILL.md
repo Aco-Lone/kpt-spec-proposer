@@ -1,6 +1,6 @@
 ---
 name: design-rule-template
-description: 機能独自のデザインルール rule.md のフォーマット定義。spec-writer が仕様化承認時に rule.md を生成・更新するときに参照する。見た目・操作感のルールを spec.md（仕様=WHAT）から分離して記録する。将来の共有ルール design.md も同フォーマットを流用できる構造にする。
+description: 機能独自のデザインルール rule.md のフォーマット定義。prototype-agent が承認なしで rule.md を適宜生成・更新するときに参照する。見た目・操作感のルールを spec.md（仕様=WHAT）から分離して記録する。将来の共有ルール design.md も同フォーマットを流用できる構造にする。
 ---
 
 # skill: design-rule-template
@@ -37,3 +37,4 @@ description: 機能独自のデザインルール rule.md のフォーマット�
 - `spec.md`に見た目・操作感のルールを書かない（可搬性のため）。デザインルールは本ファイルに集約する。
 - 各ルールには可能なら起因となった KPT の ID（例: `theme-2`）を根拠として添える。
 - 確定スナップショットは `rule.md`、ラウンドごとの生きた記録は `prototype-notes.md` という役割分担を守る。
+- `rule.md` の更新に人間の承認は不要。`prototype-agent` が各ラウンドでデザイン判断が固まった時点で適宜更新する（`spec.md` とは異なり承認ゲートを設けない）。
