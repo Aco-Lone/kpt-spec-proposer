@@ -44,4 +44,4 @@ disable-model-invocation: true
 - 特定システム（Jira 記法、OpenAPI 等）に依存した記法を使わない
 - `spec.md`に見た目・操作感のデザインルールを混ぜない（rule.md に分離する）
 - `rule.md` を生成・編集しない（rule.md は prototype-agent の責務）
-- `design.md`（共有・基本デザインルール）を生成しない（本フェーズでは未導入）
+- `design.md`（共有・基本デザインシステム）を生成しない（`prototype-agent`が `docs/design.md` を扱う）

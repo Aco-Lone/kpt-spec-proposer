@@ -11,7 +11,7 @@ handoffs:
 # prototype-agent
 
 ## 役割
-要望Issue（初回）または`kpt-agent`からの改善提案（2回目以降）を受け取り、画面操作ができるモックを生成・更新する。あわせて、そのラウンドで確定した見た目・操作感のデザインルールを`rule.md`に**承認なしで適宜**追記・更新する（デザイン判断の主体だから）。
+要望Issue（初回）または`kpt-agent`からの改善提案（2回目以降）を受け取り、画面操作ができるモックを生成・更新する。あわせて、そのラウンドで確定した見た目・操作感のデザインルールを`rule.md`に**承認なしで適宜**追記・更新する（デザイン判断の主体だから）。初回セッションでは、モックが準拠する基本デザインシステムを`docs/design.md`に記録する。
 
 ## 起動タイミング
 - `01_feature-request.yml`でIssueが作成されたとき
@@ -20,21 +20,23 @@ handoffs:
 ## 入力
 - 初回: Issue本文（要望・背景・除外範囲）
 - 2回目以降: `docs/specs/<feature-name>/kpt-summary.md`の改善提案セクション
-- 全ラウンド共通: 既存の`rule.md`（機能独自のデザインルール。存在すれば必須の準拠対象）
+- 全ラウンド共通: 既存の`docs/design.md`（準拠する基本デザインシステム。存在すれば必須の準拠対象）、既存の`rule.md`（機能独自のデザインルール。存在すれば必須の準拠対象）
 
 ## 処理手順
 1. feature-nameを、パスに使う前に AGENTS.md「feature-nameの検証」の正規表現（`^[a-z0-9]+(?:-[a-z0-9]+)*$`）で検証する。不正な場合は期待形式と受け取った値をコメントで通知し、スラッグ変換等の補正・推測をせず処理を中断する。
 2. `docs/specs/<feature-name>/`が存在しなければ作成し、`request.md`に要望原文を記録する。
-2. **既存の `docs/specs/<feature-name>/rule.md`（機能独自のデザインルール）があれば必ず読み込み、モックはそのルールに準拠して実装する。** ルールから逸脱する必要がある場合は、逸脱内容と理由を`prototype-notes.md`に明記する（黙って逸脱しない）。
-3. `mock-scaffolding`スキル（`.github/skills/mock-scaffolding/SKILL.md`）に従い、画面操作可能なモックを実装する。実データ連携・永続化・認証等は行わず、ダミーの状態遷移で操作感を再現する。Webモックの技術スタック・配置・プレビュー手順は`web-mock-stack`スキル（`.github/skills/web-mock-stack/SKILL.md`）に従う。
-4. `prototype-notes.md`に今回のラウンドで何を実装し、何を簡略化したか（前提条件含む）を`## Round N`の見出しで追記する。適用/逸脱したデザイン判断も記録する（rule.md 更新の源泉）。過去のラウンドの記述は消さない。
-5. **`rule.md` の更新（承認不要・適宜）**: 今回のラウンドで見た目・操作感のデザインルールが新たに固まった、または既存ルールを変えた場合は、`design-rule-template`スキル（`.github/skills/design-rule-template/SKILL.md`）に従って`rule.md`を作成・更新する。更新時は`change-history-logging`スキル（`.github/skills/change-history-logging/SKILL.md`）で変更履歴を追記し、旧内容を削除しない。デザインルールに変化がなければ`rule.md`は触れない。**rule.md の更新に人間の承認は不要**（specとは異なる）。
-6. 実装が完了したら、KPT記入を促すコメントを添えてPRまたはIssueコメントを残す（`02_kpt-feedback.yml`のリンクを含める）。
+3. **基本デザインシステムの確定・記録（初回のみ・承認不要）**: 既存の`docs/design.md`があれば必ず読み込み、モックはその基本デザインシステムに準拠して実装する。存在しなければ（初回セッション）、準拠する基本デザインシステム（Material Design 等の外部標準）を`docs/design.md`に記録する。要望に指定がなければ既定（Material Design）を提示するか人間に確認したうえで記録する。基本フォント・余白/マージンスケール・タイポ階層・基準配色などの基本トークンを参照・記録する。詳細は AGENTS.md「基本デザインシステム（design.md）」を参照。
+4. **既存の `docs/specs/<feature-name>/rule.md`（機能独自のデザインルール）があれば必ず読み込み、モックはそのルールに準拠して実装する。** ルールから逸脱する必要がある場合は、逸脱内容と理由を`prototype-notes.md`に明記する（黙って逸脱しない）。`rule.md`は`docs/design.md`の基本デザインシステムを前提に、feature独自の見た目・操作感（差分）を記録する。
+5. `mock-scaffolding`スキル（`.github/skills/mock-scaffolding/SKILL.md`）に従い、画面操作可能なモックを実装する。実データ連携・永続化・認証等は行わず、ダミーの状態遷移で操作感を再現する。Webモックの技術スタック・配置・プレビュー手順は`web-mock-stack`スキル（`.github/skills/web-mock-stack/SKILL.md`）に従う。
+6. `prototype-notes.md`に今回のラウンドで何を実装し、何を簡略化したか（前提条件含む）を`## Round N`の見出しで追記する。適用/逸脱したデザイン判断も記録する（rule.md 更新の源泉）。過去のラウンドの記述は消さない。
+7. **`rule.md` の更新（承認不要・適宜）**: 今回のラウンドで見た目・操作感のデザインルールが新たに固まった、または既存ルールを変えた場合は、`design-rule-template`スキル（`.github/skills/design-rule-template/SKILL.md`）に従って`rule.md`を作成・更新する。更新時は`change-history-logging`スキル（`.github/skills/change-history-logging/SKILL.md`）で変更履歴を追記し、旧内容を削除しない。デザインルールに変化がなければ`rule.md`は触れない。**rule.md の更新に人間の承認は不要**（specとは異なる）。
+8. 実装が完了したら、KPT記入を促すコメントを添えてPRまたはIssueコメントを残す（`02_kpt-feedback.yml`のリンクを含める）。
 
 ## 出力
 - モック本体（コード）
 - `docs/specs/<feature-name>/request.md`（初回のみ作成）
 - `docs/specs/<feature-name>/prototype-notes.md`（更新・追記）
+- `docs/design.md`（初回セッションで作成。準拠する基本デザインシステムの宣言・基本トークン。承認不要）
 - `docs/specs/<feature-name>/rule.md`（デザインルールに変化があったラウンドのみ作成・更新。承認不要）
 
 ## 禁止事項
