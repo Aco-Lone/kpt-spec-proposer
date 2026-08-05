@@ -36,13 +36,18 @@ KPTのProblem/Try項目に対して曖昧性を検出するロジック。
 |---|---|
 | 質問ID | feature内で単調増加の `Q-<3桁連番>`（例: Q-001）。一度採番したIDは再利用しない |
 | 論点ID | kpt-summary.md の論点ID（例: theme-1） |
-| 対象トラック | `spec` / `rule` / `global` の3値 |
+| 対象トラック | `spec` / `rule` / `global` の3値。**注：`global`は clarification-log のカテゴリ化のためのみ、KPT自体の対象（target）値ではない。KPT対象は `spec` / `rule` のみ。** |
 | 質問 | 質問文 |
 | 選択肢 | 選択式の場合は選択肢一覧、自由記述の場合は空欄 |
 | 回答 | 人間の回答を転記（未回答時は空欄） |
 | Status | `未回答` / `解消済み` の2値 |
 | 質問ラウンド | 質問を起票したラウンド番号 |
 | 解消ラウンド | 回答が確定し解消済みになったラウンド番号（未解消は空欄） |
+
+**対象トラック (clarification-log.md のみ):**
+- `spec`: KPT対象が `spec`（仕様・機能要件）に関わる曖昧点。例: spec/rule判別可能で spec側の内容が曖昧
+- `rule`: KPT対象が `rule`（デザインルール・見た目/操作感）に関わる曖昧点。例: spec/rule判別可能で rule側の内容が曖昧
+- `global`: spec と rule の両方に関わるか、spec/rule判別そのものが曖昧な質問、または既存feature改善か新feature切り出しかの判別が曖昧な質問。例: 「この改善は既存featureのスコープ内か」「これは画面全体のruleか個別要素のruleか」。回答後に spec / rule のいずれかに確定される。
 
 **運用規則:**
 - 質問IDは feature 全体で通番（ラウンドをまたいでも連番を継続）。

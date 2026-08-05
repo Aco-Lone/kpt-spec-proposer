@@ -45,7 +45,7 @@ KPTのCSV（`docs/specs/<feature-name>/kpt-log/roundN.csv`）がコミットさ�
 - 曖昧点が見つかった場合:
   - 質問の生成・グループ化・投稿方法はすべて`ambiguity-detection`スキル（`.github/skills/ambiguity-detection/SKILL.md`）の「質問生成ルール」に従う（件数上限なし、論点IDでグループ化・重複マージ）
   - `docs/specs/<feature-name>/clarification-log.md`に全質問を記録する（スキルの「clarification-log.md の仕様」に従ったテーブル形式）
-  - `kpt-summary.md`の末尾に未解消の曖昧点件数を対象トラック別（spec / rule / global）に明記し、「**次のアクション: 回答待ち**」を記載する
+  - `kpt-summary.md`の末尾に未解消の**質問件数**を対象トラック別（spec / rule / global）に明記し、「**次のアクション: 回答待ち**」を記載する。**注：ここの spec/rule/global は「質問」のカテゴリ化であり、KPT自体の対象（target）値ではない。KPT対象は spec/rule のみであり、global は質問ログにおける clarification-only な区分である。**
   - **すべての質問の投稿が完了するまでセッションを終了しない。** 投稿完了後にセッションを終了し、人間の回答を待つ
 
 ### Step 3: 改善提案（曖昧点がない場合のみ）
