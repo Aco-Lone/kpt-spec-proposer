@@ -20,14 +20,24 @@ body:
   - type: input
     id: csv-path
     attributes:
-      label: KPT CSV のパス
-      description: スプレッドシートから書き出し、コミットしたCSVのパス（例 docs/specs/<feature-name>/kpt-log/round2.csv）。カラムは 種別,機能カテゴリ,内容,状態。IDはagentが集約時に付与するため不要。
+      label: KPT CSV のパス（任意）
+      description: |
+        スプレッドシートから書き出し、コミットしたCSVのパス（例: docs/specs/<feature-name>/kpt-log/round2.csv）。
+        カラムは `種別,機能カテゴリ,内容,状態`（この順序で4列）。論点IDはagentが集約時に付与するため不要。
+        状態の許容値: Keep=継続 のみ / Problem=未対応・対応中・解消済み / Try=未着手・対応中・解消済み。
+        **「KPT CSV のパス」と「KPT CSV 貼り付け」の少なくとも一方は必須です。**
+        両方を指定した場合、agentが両者を照合し、内容が一致しない場合は処理を停止します（どちらかをagentが選択することはありません）。
     validations:
-      required: true
+      required: false
   - type: textarea
     id: kpt-csv
     attributes:
       label: KPT CSV（任意・貼り付け）
-      description: CSVをコミットする代わりに、ここに直接貼り付けても取り込めます。1行目はヘッダ（種別,機能カテゴリ,内容,状態）。
+      description: |
+        コミットしたCSVが無い場合、ここに直接貼り付けて取り込めます。1行目はヘッダ（`種別,機能カテゴリ,内容,状態`）。
+        カラムの順序は厳守。状態の許容値: Keep=継続 のみ / Problem=未対応・対応中・解消済み / Try=未着手・対応中・解消済み。
+        **「KPT CSV のパス」と「KPT CSV 貼り付け」の少なくとも一方は必須です。**
+        両方を指定した場合、agentが両者を照合し、内容が一致しない場合は処理を停止します。
+        agentはバリデーション通過後に生ログ（roundN.csv）を作成します。エラーがある場合は生ログを作成しません。
     validations:
       required: false
