@@ -17,7 +17,7 @@ VSCode の Copilot Chat（Agent モード）にこのファイルを添付・参
 ## 背景（なぜこの変更が必要か）
 
 - スキルは `.github/skills/<name>.md`（フラット）から `.github/skills/<name>/SKILL.md`（サブフォルダ + YAML frontmatter）へ移行済み。**旧フラットファイルは削除済み**のため、旧パス参照は壊れている。
-- AGENTS.md は「仕様化を自動連鎖させない／必ず人間承認を挟む」と明記しているが、これがプロンプト本文の記述だけに依存していると破られやすい。frontmatter 設定でも担保する必要がある。
+- AGENTS.md は「specを起こすのは人間の判断であり、kpt-agent は仕様化を提案・自動連鎖させない」と明記しているが、これがプロンプト本文の記述だけに依存していると破られやすい。frontmatter 設定でも担保する必要がある。
 
 ---
 
@@ -33,11 +33,11 @@ VSCode の Copilot Chat（Agent モード）にこのファイルを添付・参
 | スキル | 主な参照元エージェント |
 |---|---|
 | `mock-scaffolding` | prototype-agent |
+| `design-rule-template` | prototype-agent |
 | `kpt-parsing` | kpt-agent |
 | `ambiguity-detection` | kpt-agent |
-| `readiness-check` | kpt-agent |
 | `spec-template` | spec-writer |
-| `change-history-logging` | spec-writer |
+| `change-history-logging` | prototype-agent（rule.md）/ spec-writer（spec.md） |
 
 チェック手順:
 1. 各エージェントファイル内を `.github/skills/` で全文検索する。
@@ -52,7 +52,7 @@ VSCode の Copilot Chat（Agent モード）にこのファイルを添付・参
 disable-model-invocation: true
 ```
 
-- 目的: AGENTS.md「`kpt-agent` は spec化を提案するだけで、spec.md 生成は絶対に自動で行わない。必ず人間の承認アクションを挟む」を設定レベルで担保する。
+- 目的: AGENTS.md「specを起こすのは人間の判断であり、kpt-agent は spec化を提案・自動連鎖させず、spec.md 生成は必ず人間の明示起動を経る」を設定レベルで担保する。
 - `user-invocable` は既定 `true` のままでよい（人間が手動で呼べる必要があるため）。
 
 ## タスク3：ツール権限の最小化（3ファイル）
@@ -80,7 +80,7 @@ disable-model-invocation: true
 - [x] `spec-writer` に `disable-model-invocation: true` が設定されている。
 - [x] 各エージェントの `tools` が責務に対して過不足ない。
 - [x] 各エージェントに `description` が存在する。
-- [x] AGENTS.md の責任分界（prototype/kpt/spec-writer の越境禁止、人間承認必須）と矛盾しない。
+- [x] AGENTS.md の責任分界（prototype/kpt/spec-writer の越境禁止、specは人間の判断で起動、ruleは承認なしで更新）と矛盾しない。
 
 ## 参考
 
