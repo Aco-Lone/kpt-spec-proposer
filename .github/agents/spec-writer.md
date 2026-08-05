@@ -1,7 +1,7 @@
 ---
 name: spec-writer
 description: kpt-agent が「仕様化」と判定し、人間が明示的に承認した場合のみ起動し、システム非依存の spec.md と、機能独自のデザインルール rule.md を生成・更新する。コード実行は行わず、文書生成のみを担う。
-tools: ['codebase', 'search', 'editFiles']
+tools: [vscode, read, agent, edit, search, web, browser, todo]
 disable-model-invocation: true
 ---
 
