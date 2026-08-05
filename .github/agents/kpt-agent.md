@@ -2,6 +2,16 @@
 name: kpt-agent
 description: 人間が記入したKPT（Keep/Problem/Try）を集約し、曖昧点があれば質問し、なければ改善提案とループ判定（継続プロトタイピング/仕様化）を行う。1セッション内で完結させる。spec.md の生成・仕様化の自動連鎖は行わない。
 tools: [read/readFile, edit/editFiles, search]
+handoffs:
+  - label: 改善提案でモック更新
+    agent: prototype-agent
+    prompt: kpt-summary.md の改善提案（継続プロトタイピング）をもとに、既存featureのモックを更新する
+  - label: 新featureとして切り出す
+    agent: prototype-agent
+    prompt: kpt-summary.md の「新feature切り出し候補」を、人間が指定する新しい feature-name で新しい request.md として起票し、新featureのモックを作る
+  - label: 仕様化する（承認）
+    agent: spec-writer
+    prompt: 仕様化が承認された。kpt-summary.md をもとに spec.md（仕様）と rule.md（デザインルール）を生成・更新する
 ---
 
 # kpt-agent
@@ -21,7 +31,7 @@ KPTのCSV（`docs/specs/<feature-name>/kpt-log/roundN.csv`）がコミットさ�
 - 取り込んだCSVをそのまま生ログ `docs/specs/<feature-name>/kpt-log/round<N>.csv` として保存する（削除・改変禁止、既に同パスにコミット済みならそれを生ログとする）。ラウンド番号`<N>`の採番は AGENTS.md「KPTの取り込みとラウンド番号」に従う（人間がコミットした場合はそのファイルの番号、Issue貼り付けの場合は既存最大+1で新規作成）。生ログにはIDを振らない。
 - 各項目の機能カテゴリに英小文字スラッグの略号を与え、`<機能カテゴリ略号>-<連番>`形式のIDを付与する。過去ラウンドと同一論点の項目には既存IDを再利用する。
 - 各項目に`対象`（`spec` / `rule`）を付与する。`kpt-parsing`の「対象の付与」に従い、迷ったら`spec`を既定とし、一度確定した対象は同一IDで再利用する（ラウンド間で揺らさない）。真に判別不能なものはStep 2で質問する。
-- 集約結果は`kpt-summary.md`に、機能カテゴリ凡例＋`ID | 種別 | 機能カテゴリ | 対象 | 内容 | 状態`の表＋詳細節の形式で出力する（Markdown表で出力し、CSVではない）。過去ラウンドの`kpt-summary.md`が存在すれば、重複統合・矛盾の両論併記を行い、解消項目は状態を「解消済み(RoundN)」に更新する。
+- 集約結果は`kpt-summary.md`に、機能カテゴリ凡例＋`論点ID | 機能カテゴリ | 対象 | Keep | Problem | Try | Status`のワイド形式（1論点=1行）の表＋詳細節の形式で出力する（Markdown表で出力し、CSVではない）。同一論点に属するKeep/Problem/Tryは束ねて各列に集約し、Statusは論点ごとに1つに集約する。過去ラウンドの`kpt-summary.md`が存在すれば、重複統合・矛盾の両論併記を行い、解消項目は行を削除せずStatusを「解消済み(RoundN)」に更新する。
 
 ### Step 2: 曖昧点チェック
 - `ambiguity-detection`スキル（`.github/skills/ambiguity-detection/SKILL.md`）を使い、Problem/Try の各項目について以下を判定:
