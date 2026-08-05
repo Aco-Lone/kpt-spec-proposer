@@ -44,7 +44,10 @@ disable-model-invocation: true
    （要件がKPTに由来する場合、`kpt-summary.md`のID（例: `theme-2`）を根拠として参照してよい）
 3. 初回作成時: `docs/specs/<feature-name>/spec.md`を新規作成
 4. 更新時: `change-history-logging`スキル（`.github/skills/change-history-logging/SKILL.md`）で`spec.md`の変更履歴を追記する。
-5. rule が同時収束かつ同一承認で確定する場合は、続けて **rule アクション** の手順を実行する。
+5. rule が同時収束かつ同一承認で確定する場合は、以下をすべて確認した上で **rule アクション** の手順を実行する:
+   - `kpt-summary.md` の rule トラック状態が「収束傾向」であること
+   - `clarification-log.md` が存在する場合、rule および global の未回答質問が残っていないこと
+   - 上記が満たされない場合は rule.md を生成せず、その旨をコメントで明示する
 6. 確定後、以下をコメント等で明示する:
    - 確定したトラック（spec のみ / rule のみ / spec + rule）
    - 「このスナップショットは開発の終了地点ではなく、ループは継続する」

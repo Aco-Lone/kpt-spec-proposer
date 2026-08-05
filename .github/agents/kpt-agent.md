@@ -13,7 +13,7 @@ handoffs:
     agent: spec-writer
     prompt: |
       spec仕様化が承認された。kpt-summary.md をもとに spec.md（仕様）を生成・更新する。
-      rule の「総合アクション」が「spec仕様化（人間承認待ち）」でかつ rule も同時収束している場合は rule.md も同時に生成・更新してよい。
+      総合アクションは spec仕様化 であり、rule が同時収束している場合に限り rule.md も同時に生成・更新してよい。
       rule が未収束の場合は rule.md には一切触れない。
   - label: approve-rule
     agent: spec-writer
