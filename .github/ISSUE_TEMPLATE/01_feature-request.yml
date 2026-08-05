@@ -7,7 +7,12 @@ body:
     id: feature-name
     attributes:
       label: 機能名（feature-name）
-      description: 成果物ディレクトリ docs/specs/<feature-name>/ に使う識別子。半角英数字とハイフンで簡潔に（例 color-theme-setting）
+      description: |
+        成果物ディレクトリ docs/specs/<feature-name>/ に使う識別子。
+        形式: 半角小文字英数字とハイフンのみ（正規表現 ^[a-z0-9]+(?:-[a-z0-9]+)*$）。
+        使用可能: color-theme-setting
+        使用不可: ColorTheme、color_theme、color--theme、../color-theme
+        不正な識別子はagentが処理を中断します（自動補正はしません）。
     validations:
       required: true
   - type: textarea

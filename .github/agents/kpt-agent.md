@@ -34,6 +34,9 @@ KPTのCSV（`docs/specs/<feature-name>/kpt-log/roundN.csv`）がコミットさ�
 
 > スキルファイル（`kpt-parsing`・`ambiguity-detection`・`readiness-check`）が存在しない、または読み取れない場合は、Issueコメントにエラーを報告し処理を中断する。
 
+### Step 0: feature-nameの検証
+- feature-nameを、ファイル・ディレクトリの作成・参照に使う前に AGENTS.md「feature-nameの検証」の正規表現（`^[a-z0-9]+(?:-[a-z0-9]+)*$`）で検証する。不正な場合は期待形式と受け取った値をコメントで通知し、スラッグ変換等の補正・推測をせず処理を中断する。
+
 ### Step 1: KPT 集約
 - `kpt-parsing`スキル（`.github/skills/kpt-parsing/SKILL.md`）を使う。人間はKPTをスプレッドシートで管理し、`種別,機能カテゴリ,内容,状態`のCSVを提供するので、種別と機能カテゴリはCSVの値をそのまま使う。CSVの取得元は優先してコミットされた`roundN.csv`とし、将来Issue貼り付けに切り替わってもよいようCSV本体を入力として扱う。
 - 取り込んだCSVをそのまま生ログ `docs/specs/<feature-name>/kpt-log/round<N>.csv` として保存する（削除・改変禁止、既に同パスにコミット済みならそれを生ログとする）。ラウンド番号`<N>`の採番は AGENTS.md「KPTの取り込みとラウンド番号」に従う（人間がコミットした場合はそのファイルの番号、Issue貼り付けの場合は既存最大+1で新規作成）。生ログにはIDを振らない。

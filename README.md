@@ -12,7 +12,7 @@
    → 人間がKPTをスプレッドシートで管理しCSVを取り込み
    → kpt-agent（集約・曖昧点質問・改善提案・ループ判定）
    → 「継続プロトタイピング」なら prototype-agent に戻る
-   → 「仕様化」なら人間承認を経て spec-writer が spec.md（仕様）と rule.md（機能独自のデザインルール）を生成
+   → 「仕様化」なら人間承認を経て spec-writer がトラック別に spec.md（仕様）・rule.md（機能独自のデザインルール）を生成（spec先行確定、rule後追い確定を許容）
    → spec.md確定後もループは継続
 ```
 
@@ -33,9 +33,10 @@ AGENTS.md                        リポジトリ全体のベース方針、エ�
   agents/
     prototype-agent.md           要望/改善提案 → モック生成・更新
     kpt-agent.md                 KPT集約 + 曖昧点抽出 + 改善提案 + ループ判定
-    spec-writer.md               仕様化承認後にのみ起動し spec.md を生成
+    spec-writer.md               仕様化承認後にspec.mdを生成・更新し、ruleトラック収束後にrule.mdを生成・更新
   skills/
     mock-scaffolding/SKILL.md        モック実装時の簡略化ルール
+    web-mock-stack/SKILL.md          WebモックのVite + React + TypeScript構成・配置・プレビュー手順
     kpt-parsing/SKILL.md             KPTの抽出・分類・対象付与・生ログ保存ロジック
     ambiguity-detection/SKILL.md     曖昧点の判定ロジック（対象判別・rule矛盾を含む）
     readiness-check/SKILL.md         トラック別の「継続プロトタイピング」か「仕様化」かの判定材料
@@ -45,6 +46,8 @@ AGENTS.md                        リポジトリ全体のベース方針、エ�
   ISSUE_TEMPLATE/
     01_feature-request.yml       要望入力（feature-nameを指定）
     02_kpt-feedback.yml          KPT取り込み（スプレッドシートのCSVをコミット・貼付け、feature-nameで対応づけ）
+
+mocks/<feature-name>/                画面操作可能なモック本体（Vite + React + TypeScript、web-mock-stackスキルに従う）
 
 docs/
   process/
@@ -56,9 +59,20 @@ docs/
       kpt-log/roundN.csv         KPTの生ログ（スプレッドシートから取り込んだCSV。削除・改変しない）
       kpt-summary.md             kpt-agentによる集約結果（Markdown表・ワイド形式＋論点ID＋対象、毎ラウンド更新）
       clarification-log.md       曖昧点の質問と回答（曖昧点がある場合）
-      spec.md                    仕様（WHAT）。仕様化承認後にのみ生成
-      rule.md                    機能独自のデザインルール（見た目・操作感）。仕様化承認後にのみ生成
+      spec.md                    仕様（WHAT）。specトラック収束・人間承認後に生成
+      rule.md                    機能独自のデザインルール（見た目・操作感）。ruleトラック収束・人間承認後に生成（specより後追い確定も可）
 ```
+
+## 入力仕様（要点）
+
+詳細な判定ロジックは各skillファイルを正本とし、ここでは利用者が入力時に知っておくべき要点のみを示す。
+
+- **feature-nameの形式**: `^[a-z0-9]+(?:-[a-z0-9]+)*$`（半角小文字英数字とハイフンのみ）。詳細は [AGENTS.md](AGENTS.md)「feature-nameの検証」を参照。
+- **KPT CSVのヘッダ**: `種別,機能カテゴリ,内容,状態`（この順で4列固定）。詳細は [kpt-parsing/SKILL.md](.github/skills/kpt-parsing/SKILL.md)「入力検証」を参照。
+- **状態の許容値**: 種別ごとに異なる（Keep=`継続`のみ／Problem・Try=`未対応`|`対応中`|`解消済み`等）。詳細は同スキルを参照。
+- **CSVの取得元**: 「コミット済みCSVパス」または「Issue本文への貼り付け」の少なくとも一方が必須。両方指定時は内容が一致しないと処理を中断する。詳細は同スキルを参照。
+- **最新表とラウンド履歴**: `kpt-summary.md`の`KPT一覧`は論点ごとの最新スナップショット（上書き）、`ラウンド履歴`はラウンドごとの観測の追記（削除・改変しない）。詳細は同スキルを参照。
+- **spec先行・rule後追い確定**: specトラックが収束すればruleが未収束でも仕様化（spec.md確定）を提案できる。rule確定はspec確定後に別途提案される。詳細は [readiness-check/SKILL.md](.github/skills/readiness-check/SKILL.md)を参照。
 
 ## 設計判断の記録
 
@@ -104,7 +118,7 @@ spec.mdの確定を「開発の終点」として扱うと、確定後に得ら�
 
 ### なぜデザインルールの確定に専用エージェントを新設しなかったか
 
-`design-writer`のような専用エージェントを増やすと、非同期・手動起動のCoding Agentでは「呼び忘れ」が増え、確定トリガーが増殖してプロセス摩擦が上がります（エージェントを2〜3体に絞った理由と同じ）。そこで`rule.md`は`spec.md`と同じ「仕様化承認」のタイミングで`spec-writer`が同時にスナップショット確定する設計にしました。ラウンドごとの生きたデザイン判断は`prototype-notes.md`に記録し、確定版だけを`rule.md`に切り出します。プロトタイプがルールを守る導線として、`prototype-agent`は着手前に既存`rule.md`を必須参照します。
+`design-writer`のような専用エージェントを増やすと、非同期・手動起動のCoding Agentでは「呼び忘れ」が増え、確定トリガーが増殖してプロセス摩擦が上がります（エージェントを2〜3体に絞った理由と同じ）。そこで`rule.md`の確定も同じ`spec-writer`が担いますが、収束はspec/ruleそれぞれのトラックで別々に判定するため、確定タイミングは必ずしも同時ではありません（spec先行確定、rule後追い確定を許容）。ラウンドごとの生きたデザイン判断は`prototype-notes.md`に記録し、確定版だけを`rule.md`に切り出します。プロトタイプがルールを守る導線として、`prototype-agent`は着手前に既存`rule.md`を必須参照します。
 
 ### なぜ「対象」をagentが付与し安定化させるのか
 
