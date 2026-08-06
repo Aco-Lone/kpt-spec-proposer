@@ -1,108 +1,58 @@
 # AGENTS.md
 
-このリポジトリは「シンプルな要望 → 画面操作モック（プロトタイプ） → KPT振り返り → （人間が必要な機能を搭載できたと判断したら）仕様化（spec.md）」という反復サイクルを、GitHub Copilot Coding Agentのカスタムエージェントで運用するための構成です。
+「要望 → 画面操作モック → KPT振り返り → （人間の判断で）仕様化（spec.md）」の反復サイクルを、カスタムエージェントで運用するリポジトリ。
 
 ## 全体プロセス
 
 ```
 ラウンドN（繰り返し）:
-  prototype-agent → モック更新。あわせて必要なら rule.md を承認なしで適宜更新
-  人間 → KPTをスプレッドシートで管理しCSVを取り込み (kpt-log/roundN.csv コミット or 02_kpt-feedback に貼付け)
-  kpt-agent → 集約・(曖昧点があれば質問して中断 | 改善提案)
+  prototype-agent → モック更新（+ 必要なら rule.md を承認なしで更新）
+  人間 → KPTのCSVを取り込み (kpt-log/roundN.csv コミット or 02_kpt-feedback に貼付け)
+  kpt-agent → 集約 → 曖昧点があれば質問して中断 / なければ改善提案
   人間 → 改善提案をもとに次ラウンドのモック更新を prototype-agent に依頼
 
-spec化（人間の判断でいつでも起動可能。ラウンドとは独立）:
-  人間が「必要な機能を搭載できた」と判断したとき
-    → 人間が spec-writer を手動起動（kpt-agent は提案・自動連鎖しない）
-    → spec-writer が spec.md（仕様=WHAT）を生成・更新する
-    → 生成後もプロトタイプは残り、ループは継続する
-    → 以降の変更差分も spec.md に追記していく（change-history-logging）
-
-rule（機能独自のデザインルール = 見た目・操作感）:
-  prototype-agent が各ラウンドでデザイン判断が固まった時点で rule.md を承認なしで適宜更新する
-  収束判定・人間承認は行わない（spec とは扱いが異なる）
+spec化（ラウンドとは独立。人間が「必要な機能を搭載できた」と判断したときのみ）:
+  人間が spec-writer を手動起動 → spec.md を生成・更新 → 以降もループは継続
 ```
 
-spec.md の生成は「ゴール」ではなく「その時点のスナップショット」。生成後もprototype-agent/kpt-agentのループは続きます。
+spec.md は「ゴール」ではなく「その時点のスナップショット」。
 
-## エージェントの責任分界（重要: 越境しない）
+## エージェントの責任分界（越境しない）
 
-| エージェント | 役割 | 起動タイミング |
+| エージェント | 生成・更新する成果物 | 起動 |
 |---|---|---|
-| `prototype-agent` | 要望または改善提案からモックを生成・更新する（既存 rule.md に準拠）。あわせて `rule.md`（機能独自のデザインルール）を**承認なしで適宜**更新する | 要望Issue作成時、または改善提案をもとに人間がモック更新を依頼した時 |
-| `kpt-agent` | KPTを集約し（対象=spec/ruleを付与）、曖昧点があれば質問、なければ改善提案を行う。**仕様化の可否は判定しない** | KPT Issue/コメントが記入された時 |
-| `spec-writer` | 人間が「必要な機能を搭載できた」と判断して明示起動した場合のみ、`spec.md`（仕様）を生成・更新する。**rule.md は扱わない** | 人間が明示的にメンション・アサインした時のみ（自動連鎖させない） |
+| `prototype-agent` | モック本体、`request.md`、`prototype-notes.md`、`docs/design.md`（初回）、`rule.md`（承認不要・適宜） | 要望Issue作成時 / 人間がモック更新を依頼した時 |
+| `kpt-agent` | `kpt-log/roundN.csv`、`kpt-summary.md`、`clarification-log.md` | KPTのCSVコミット時 / KPT Issue・回答コメント投稿時 |
+| `spec-writer` | `spec.md` | 人間が明示的にメンション・アサインした時のみ |
 
-**厳守事項:**
-- specを起こすタイミングは**人間の判断**（必要な機能が揃ったか）。`kpt-agent`は仕様化を提案・判定せず、`spec-writer`を自動起動しない。`spec-writer`の起動は必ず人間の明示アクションを挟む。
-- `rule.md`の更新に**人間の承認は不要**。`prototype-agent`がデザイン判断の固まったラウンドで適宜更新する（収束判定は行わない）。
-- `kpt-agent`は曖昧点の質問を1セッション内でまとめて出し切る。複数ラウンドに分割しない（非同期のIssue往復コストを最小化するため）。
-- KPTの生ログ（`kpt-log/roundN.csv`）は要約後も削除・改変しない。
-- 成果物の分離を守る: `spec.md`=仕様（WHAT）、`rule.md`=機能独自のデザインルール（見た目・操作感）、`docs/design.md`=準拠する基本デザインシステム（外部標準・基本トークン）。spec.md にデザインルールを混ぜない（可搬性のため）。
-- 成果物の生成主体を守る: `spec.md`=`spec-writer`（人間の判断で起動）、`rule.md`=`prototype-agent`（承認なしで適宜）、`docs/design.md`=`prototype-agent`（初回セッションで作成・承認なし）。
+## 厳守事項
 
-## KPTの表形式・論点ID規約
-
-`kpt-agent`はKPTを`kpt-summary.md`上でワイド形式（1論点=1行）の表に集約する。表カラムは `論点ID | 機能カテゴリ | 対象 | Keep | Problem | Try | Status` とする。同一論点に属するKeep/Problem/Tryは束ねて各列に集約し、Statusは論点ごとに1つに集約する。
-
-- **論点ID**: `<機能カテゴリ略号>-<連番>`（例 `nav-1`）。機能カテゴリ略号は英小文字スラッグで、`request.md`・`prototype-notes.md`の機能領域から導出し、`kpt-summary.md`先頭の凡例で正式名に対応づける。連番は機能カテゴリごと・feature-name内で一意。
-- **同一性**: 一度振った論点IDは同一論点が続く限り再利用し、新規論点のみ新IDを採番する。解消された論点は行を削除せず、Statusを「解消済み(RoundN)」に更新する。
-- **人間入力**: 人間はKPTをスプレッドシートで管理し、`種別,機能カテゴリ,内容,状態`のヘッダを持つCSVとして提供する（種別ごとに1行）。論点IDと対象は集約時に付与するもので、入力CSVや生ログ（`kpt-log/roundN.csv`）には振らない。KeepとProblemの束ねも集約時に`kpt-agent`が行う。
-
-## 対象（spec / rule）の振り分け
-
-`kpt-agent`は各KPT項目に`対象`を付与する（人間には書かせない）。
-
-- **値**: `spec`（仕様=WHAT・機能要件）/ `rule`（機能独自のデザインルール=見た目・操作感）の2値。
-- **デフォルト規則**: 機能・データ・挙動・成功条件は`spec`。純粋に配色・余白・文言・レイアウト・遷移の見え方など見た目/操作感のみは`rule`。**どちらとも取れる場合は`spec`を既定**とし、真に判別不能なものだけ質問する。
-- **安定化**: 一度確定した`対象`は同一論点IDで再利用し、ラウンド間で揺らさない（成果物の振り分けを安定させるため）。
-- **成果物との対応**: `対象=spec`→`spec.md`（人間の判断で`spec-writer`が生成）、`対象=rule`→`rule.md`（`prototype-agent`が承認なしで適宜更新）。対象は改善提案の整理と成果物の振り分けに使い、仕様化の可否判定（収束判定）には使わない。
-
-## 既存feature改善か新featureかの判別
-
-`kpt-agent`は各論点が「既存featureのKPT改善」か「新featureとして切り出すべき要望」かを判別する（人間には書かせない）。複数機能を扱う際に、フィードバックを既存featureの続きとして処理するか新featureを起こすかを明確にするため。
-
-- **基準**: 既存feature `request.md` の「やりたいこと」の範囲内なら**既存feature改善**、その目的・画面・データ・ユーザー体験を超えるなら**新feature候補**。
-- **既定**: どちらとも取れる場合は**既存feature改善を既定**とし（feature乱立を防ぐため）、明らかにスコープを超えるものだけ新feature候補にする。真に判別不能なものは`ambiguity-detection`で質問する。
-- **提示のみ**: 新feature候補は`kpt-summary.md`末尾「次のアクション」に論点ID・想定feature-name案・根拠を列挙するのみ。新feature切り出し（新`request.md`起票・新ディレクトリ作成）は人間の判断・承認後に行い、`kpt-agent`が自動で行わない。
-
-## 基本デザインシステム（design.md）
-
-`design.md`は、モックが**準拠する基本デザインシステム**（Material Design 等、Googleなどが定義した外部標準）を宣言し、その基本デザイントークン（基本フォント・余白/マージンスケール・タイポ階層・基準配色など）を参照・記録する、リポジトリ横断の共有ファイルである。独自にゼロから育てる概念ではなく、確立済みの外部標準を参照する。
-
-- **配置**: `docs/design.md`（リポジトリ横断で全featureが共有する）。
-- **確定タイミング**: **最初のプロト作成時（`prototype-agent`の初回セッション）**に確定する。最初のモックは必ず何らかのフォント・マージン・配色で作られる＝基本デザインシステムは初回時点で暗黙に確定しているため、明文化を後回しにしない。既存の外部標準を参照するだけなので「複数featureが揃うまで空箱になる」問題は生じない。
-- **生成主体**: `prototype-agent`が作成・更新する（デザイン判断の主体だから）。承認は不要。既に`docs/design.md`が存在すれば、`prototype-agent`はそれに準拠してモックを作る。
-- **要望に指定がない場合**: `prototype-agent`は既定の基本デザインシステム（Material Design）を提示、または人間に確認したうえで`design.md`に記録する。
-- **`rule.md`との関係**: `rule.md`は`design.md`の基本デザインシステムを**前提**として、その上に乗る**feature独自**の見た目・操作感（差分）を記録する。基本トークンそのものは`design.md`、feature固有の差分は`rule.md`。
-
-## specを起こすタイミング（人間の判断）
-
-`spec.md`は、**人間が「必要な機能を搭載できた」と判断したとき**にのみ、人間が`spec-writer`を明示起動して生成・更新する。
-
-- `kpt-agent`は仕様化の可否を判定・提案しない。収束度・Keep/Problem比率などによる自動判定は行わない（過去に存在した`readiness-check`スキルは廃止した）。
-- `spec-writer`起動の唯一のゲートは「未解決の曖昧点（spec / global の未回答質問）がないこと」。曖昧点があれば先に`kpt-agent`で解消する。
-- `rule.md`はこの判断とは無関係に、`prototype-agent`がデザイン判断の固まったラウンドで承認なしに更新する。
-- 既存featureのスコープを超える論点があれば`kpt-agent`が`新feature切り出し候補`を提示する（提示のみ。実行は人間の判断・承認後）。
-
-## KPTの取り込みとラウンド番号
-
-- **feature-name**: 成果物の集約先ディレクトリ名。要望Issue（`01_feature-request.yml`）の「機能名（feature-name）」で指定し、`prototype-agent`が最初のセッションで`docs/specs/<feature-name>/request.md`に記録する。KPT Issue（`02_kpt-feedback.yml`）は同じfeature-nameを指定して対応づける。
-- **KPTの取り込み**: 人間はKPTをスプレッドシートで管理し、CSV（`種別,機能カテゴリ,内容,状態`）を成果物に取り込む。優先方法は `docs/specs/<feature-name>/kpt-log/roundN.csv` へのコミット。将来的にIssueフォームへのCSV貼り付けに切り替えられるよう、取得元に依らずCSV本体を入力として扱う。
-- **ラウンド番号 N**: `docs/specs/<feature-name>/kpt-log/`内の`roundN.csv`の番号で決まる。人間が`roundN.csv`をコミットした場合はその最新ファイルの番号が当該ラウンド。Issueフォームへの貼り付け方式では`kpt-agent`が既存最大+1の`roundN.csv`を新規作成する。ファイルが無ければRound1。
-- **生ログの保存責務**: `kpt-agent`は集約に先立ち、取り込んだKPTのCSVを`kpt-log/roundN.csv`として逐字保存（既に人間が同パスにコミット済みならそのファイルを生ログとする）してから集約する。生ログは要約後も削除・改変しない。
+- spec化のタイミングは人間の判断。`kpt-agent`は仕様化の可否を提案・判定せず、`spec-writer`を自動起動しない。`spec-writer`起動時の唯一のゲートは「`clarification-log.md`に spec / global の未回答質問がないこと」。
+- `rule.md`の更新に人間の承認は不要。`prototype-agent`がデザイン判断の固まったラウンドで適宜更新する（収束判定はしない）。
+- `kpt-agent`は曖昧点の質問を1セッション内でまとめて出し切る（複数ラウンドに分割しない）。
+- KPTの生ログ（`kpt-log/roundN.csv`）は削除・改変しない。
+- 成果物を混ぜない: `spec.md`=仕様（WHAT）、`rule.md`=feature独自のデザインルール（見た目・操作感）、`docs/design.md`=準拠する基本デザインシステム（Material Design 等の外部標準・基本トークン、リポジトリ横断・承認不要）。`spec.md`にデザインルールを書かない。
+- 表の「生成・更新する成果物」以外を各エージェントが作成・編集しない。
 
 ## feature-nameの検証
 
-- 許可形式は `^[a-z0-9]+(?:-[a-z0-9]+)*$` とする。
-- パス区切り、`.`、先頭末尾ハイフン、連続ハイフン、大文字、空白、日本語は受け付けない。
-- `prototype-agent`と`kpt-agent`は、ファイルやディレクトリを作成・参照する前に検証する。
-- 不正な場合は期待形式と受け取った値を通知し、パスを補正・推測せず処理を中断する（スラッグ変換等の黙った補正は、1つのfeatureが2つのディレクトリに分裂する原因になるため行わない）。
+- 許可形式は `^[a-z0-9]+(?:-[a-z0-9]+)*$`。`prototype-agent`と`kpt-agent`は、パスに使う前に検証する。
+- 不正な場合は期待形式と受け取った値を通知し、スラッグ変換等の補正・推測をせず処理を中断する。
 
 ## ディレクトリ規約
 
-成果物のうちfeature固有のものは必ず `docs/specs/<feature-name>/` 配下に集約する。基本デザインシステム`design.md`はリポジトリ横断で共有するため `docs/design.md` に置く。ファイル構成は各エージェント定義ファイルを参照。
+- feature固有の成果物: `docs/specs/<feature-name>/`（`request.md` / `prototype-notes.md` / `kpt-log/roundN.csv` / `kpt-summary.md` / `clarification-log.md` / `spec.md` / `rule.md`）
+- モック本体: `mocks/<feature-name>/`
+- リポジトリ横断: `docs/design.md`
+- ラウンド番号 N: `kpt-log/`内の`roundN.csv`の最大番号。貼り付け方式では既存最大+1で新規作成。ファイルが無ければRound1。
 
-## なぜこの構成か
+## 詳細ルールの正本（重複記述しない）
 
-詳細は README.md の「設計判断の記録」を参照。
+| ルール | 正本 |
+|---|---|
+| KPTのCSV形式・入力検証・生ログ保存・論点ID・対象(spec/rule)の付与・Statusの集約・新feature切り出しの判別・`kpt-summary.md`の書式 | `.github/skills/kpt-parsing/SKILL.md` |
+| 曖昧点の判定パターン・質問生成ルール・`clarification-log.md`の仕様 | `.github/skills/ambiguity-detection/SKILL.md` |
+| `spec.md` / `rule.md` の書式 | `.github/skills/spec-template/SKILL.md` / `design-rule-template/SKILL.md` |
+| 変更履歴の追記規則 | `.github/skills/change-history-logging/SKILL.md` |
+| モックの簡略化方針 / Webモックの技術スタック | `.github/skills/mock-scaffolding/SKILL.md` / `web-mock-stack/SKILL.md` |
+| 設計判断の理由（なぜこの構成か） | `README.md`（エージェントは参照不要） |

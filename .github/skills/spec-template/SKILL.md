@@ -1,14 +1,14 @@
 ---
 name: spec-template
-description: システム非依存の spec.md フォーマット定義。spec-writer が人間の判断で spec.md を生成・更新するときに参照する。特定のSDDツール（Jira記法・OpenAPI専用構文等）に依存しないMarkdown見出し構造のみを使う。
+description: システム非依存の spec.md フォーマット定義。spec-writer が spec.md を生成・更新するときに使う。
 ---
 
 # skill: spec-template
 
-システム非依存のspec.mdフォーマット定義。特定のSDDツール（Jira記法、OpenAPI専用構文等）に依存しないMarkdown見出し構造のみを使用する。
+システム非依存の `spec.md` フォーマット定義。特定のSDDツール（Jira記法、OpenAPI専用構文等）に依存しないMarkdown見出し構造のみを使用する。
 
-## 対象範囲（デザインルールは書かない）
-`spec.md`は仕様（WHAT・機能要件）のみを記録する。配色・余白・タイポ・遷移など見た目・操作感のデザインルールは`spec.md`に混ぜず、`rule.md`（`design-rule-template`スキル）に分離する。これは spec.md を他ツール（Notion / Jira 等）へ転記する際の可搬性を保つため。デザインに言及する必要がある場合は「デザインルールは rule.md を参照」とだけ記す。
+## 対象範囲
+`spec.md` は仕様（WHAT・機能要件）のみを記録する。見た目・操作感のデザインルールは `rule.md`（`design-rule-template`）に分離し、必要なら「デザインルールは rule.md を参照」とだけ記す。
 
 ## テンプレート
 
