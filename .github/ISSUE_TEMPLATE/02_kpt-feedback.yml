@@ -9,10 +9,6 @@ body:
       label: 機能名（feature-name）
       description: |
         対象の要望Issueで指定した feature-name（docs/specs/<feature-name>/ に対応）。
-        形式: 半角小文字英数字とハイフンのみ（正規表現 ^[a-z0-9]+(?:-[a-z0-9]+)*$）。
-        使用可能: color-theme-setting
-        使用不可: ColorTheme、color_theme、color--theme、../color-theme
-        不正な識別子はagentが処理を中断します（自動補正はしません）。
     validations:
       required: true
   - type: input
@@ -27,11 +23,11 @@ body:
     attributes:
       label: KPT CSV のパス（任意）
       description: |
-        スプレッドシートから書き出し、コミットしたCSVのパス（例: docs/specs/<feature-name>/kpt-log/round2.csv）。
-        カラムは `種別,機能カテゴリ,内容,状態`（この順序で4列）。論点IDはagentが集約時に付与するため不要。
-        状態の許容値: Keep=継続 のみ / Problem=未対応・対応中・解消済み / Try=未着手・対応中・解消済み。
-        **「KPT CSV のパス」と「KPT CSV 貼り付け」の少なくとも一方は必須です。**
-        両方を指定した場合、agentが両者を照合し、内容が一致しない場合は処理を停止します（どちらかをagentが選択することはありません）。
+        スプレッドシートから書き出し、コミットしたCSVのパス（例: docs/kpt/kpt-log/round2.csv）。
+        カラムは `機能カテゴリ,Keep,Keep状態,Problem,Problem状態,Try,Try状態`（この順序で7列、1行=1論点）。論点IDはagentが集約時に付与するため不要。
+        内容が非空の列のみ対応する状態列が必須。状態の許容値: Keep状態=継続 のみ / Problem状態=未対応・対応中・解消済み / Try状態=未着手・対応中・解消済み。
+        **「KPT CSV のパス」「KPT CSV 貼り付け」「KPT 自由記述」の少なくとも一つは必須です。**
+        CSVのパスと貼り付けを両方指定した場合、agentが両者を照合し、内容が一致しない場合は処理を停止します（どちらかをagentが選択することはありません）。
     validations:
       required: false
   - type: textarea
@@ -39,10 +35,19 @@ body:
     attributes:
       label: KPT CSV（任意・貼り付け）
       description: |
-        コミットしたCSVが無い場合、ここに直接貼り付けて取り込めます。1行目はヘッダ（`種別,機能カテゴリ,内容,状態`）。
-        カラムの順序は厳守。状態の許容値: Keep=継続 のみ / Problem=未対応・対応中・解消済み / Try=未着手・対応中・解消済み。
-        **「KPT CSV のパス」と「KPT CSV 貼り付け」の少なくとも一方は必須です。**
-        両方を指定した場合、agentが両者を照合し、内容が一致しない場合は処理を停止します。
-        agentはバリデーション通過後に生ログ（roundN.csv）を作成します。エラーがある場合は生ログを作成しません。
+        コミットしたCSVが無い場合、ここに直接貼り付けて取り込めます。1行目はヘッダ（`機能カテゴリ,Keep,Keep状態,Problem,Problem状態,Try,Try状態`）。1行=1論点で入力してください。
+        カラムの順序は厳守。状態の許容値: Keep状態=継続 のみ / Problem状態=未対応・対応中・解消済み / Try状態=未着手・対応中・解消済み。
+        **「KPT CSV のパス」「KPT CSV 貼り付け」「KPT 自由記述」の少なくとも一つは必須です。**
+        agentが生ログ（docs/kpt/kpt-log/roundN.csv）を作成します。
+    validations:
+      required: false
+  - type: textarea
+    id: kpt-freeform
+    attributes:
+      label: KPT 自由記述（任意）
+      description: |
+        表形式のCSVを用意できない場合、Keep/Problem/Tryの内容を自由な文章で記入できます。
+        agentが機能カテゴリ・Keep/Problem/Try・状態を読み取り、CSV形式に整形した上で docs/kpt/kpt-log/roundN.csv として保存します。
+        **「KPT CSV のパス」「KPT CSV 貼り付け」「KPT 自由記述」の少なくとも一つは必須です。**
     validations:
       required: false
