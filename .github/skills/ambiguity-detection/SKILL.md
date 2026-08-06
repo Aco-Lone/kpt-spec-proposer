@@ -1,6 +1,6 @@
 ---
 name: ambiguity-detection
-description: 集約済みKPTのProblem/Try項目から曖昧点を検出し、選択式の確認質問を生成するロジック。kpt-agent が改善提案に進む前の曖昧点チェックで参照する。範囲・優先度・対象ユーザー・成功基準・前提条件の欠落に加え、対象（spec/rule）判別不能・既存rule.mdとの矛盾を判定パターンとして定義する。
+description: 集約済みKPTから曖昧点を検出し選択式の確認質問を生成するロジック。kpt-agent が改善提案に進む前の曖昧点チェックで使う。
 ---
 
 # skill: ambiguity-detection

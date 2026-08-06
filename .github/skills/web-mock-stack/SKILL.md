@@ -1,6 +1,6 @@
 ---
 name: web-mock-stack
-description: Webモック（プロトタイプ）を Vite + React + TypeScript で作成・更新する際の技術方針。prototype-agent がモックのコードを生成・更新するときに mock-scaffolding と併せて参照する。使用スタック、配置ディレクトリ（mocks/<feature-name>/）、ローカルサーバでのプレビュー手順、依存追加の最小化方針を定義する。Use when: Webモック作成, プロトタイプ実装, Vite, React, モック環境構築, mock scaffolding web.
+description: Webモックの技術スタック（Vite + React + TypeScript）・配置・プレビュー手順。prototype-agent がWebモックを実装するときに mock-scaffolding と併せて使う。
 ---
 
 # skill: web-mock-stack

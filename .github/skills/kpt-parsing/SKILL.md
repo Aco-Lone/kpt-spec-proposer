@@ -1,6 +1,6 @@
 ---
 name: kpt-parsing
-description: スプレッドシートで管理されたKPT（Keep/Problem/Try）のCSVを取り込み、論点ID・機能カテゴリ・対象（spec/rule）を振ったワイド形式（1論点=1行）の表に構造化・集約するロジック。kpt-agent がKPTのCSVを集約し kpt-summary.md を更新するときに参照する。CSV形式、生ログの保存、論点ID採番・同一性、対象の付与、Keep/Problem/Tryの束ね、Statusの集約、既存feature改善か新feature切り出しかの判別、過去ラウンドとのマージ規則を定義する。
+description: KPTのCSVを論点ID付きワイド表に集約するロジック（CSV形式・検証・論点ID・対象・Status・新feature判別を含む）。kpt-agent が kpt-summary.md を更新するときに使う。
 ---
 
 # skill: kpt-parsing

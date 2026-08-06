@@ -1,6 +1,6 @@
 ---
 name: change-history-logging
-description: spec.md / rule.md の更新後もプロトタイピング・KPTループが継続する前提で、ラウンドごとの変更差分を各成果物の変更履歴へ追記するロジック。spec-writer が spec.md を、prototype-agent が rule.md を更新するときに参照する。旧内容を削除せず旧→新の差分を残す規則を定義する。
+description: spec.md / rule.md の更新差分を変更履歴に追記するロジック。spec-writer / prototype-agent が各成果物を更新するときに使う。
 ---
 
 # skill: change-history-logging

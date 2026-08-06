@@ -1,6 +1,6 @@
 ---
 name: design-rule-template
-description: 機能独自のデザインルール rule.md のフォーマット定義。prototype-agent が承認なしで rule.md を適宜生成・更新するときに参照する。見た目・操作感のルールを spec.md（仕様=WHAT）から分離して記録する。将来の共有ルール design.md も同フォーマットを流用できる構造にする。
+description: 機能独自のデザインルール rule.md のフォーマット定義。prototype-agent が rule.md を生成・更新するときに使う。
 ---
 
 # skill: design-rule-template

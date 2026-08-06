@@ -1,6 +1,6 @@
 ---
 name: mock-scaffolding
-description: 画面操作可能なモック（プロトタイプ）を実装・更新する際の簡略化ルール。prototype-agent がモックのコードを生成・更新するときに参照する。実データ永続化・認証・外部APIを省略し、UIの操作感を最優先で再現する方針と、簡略化点の記録義務を定義する。
+description: モック実装時の簡略化ルール。prototype-agent がモックのコードを生成・更新するときに使う。
 ---
 
 # skill: mock-scaffolding
