@@ -1,24 +1,22 @@
 ---
 name: prototype-agent
-description: 要望または kpt-agent の改善提案から、画面操作可能なモック（プロトタイプ）を生成・更新し、あわせて機能独自のデザインルール rule.md を承認なしで適宜更新する。実データ連携・認証は行わず、UIの操作感の再現に集中する。
-tools: [vscode, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/runInTerminal, read, agent, edit, search, web/fetch, browser, vscodeTasks/runTask, todo]
-handoffs:
-  - label: kpt-feedback
-    agent: kpt-agent
-    prompt: このプロトタイプに対するKPTのCSVを取り込み、kpt-summary.md をワイド形式で集約・更新する
+description: tdd-orchestrator から呼び出され、指定された1つのREQのテストケースに対してTDD（Red→Green→Refactor）でモック（プロトタイプ）を実装・更新する。直接起動しない。
+tools: [vscode, execute/getTerminalOutput, execute/killTerminal, execute/runTask, execute/runInTerminal, read, edit, search, web/fetch, browser, vscodeTasks/runTask, todo]
+user-invocable: false
 ---
 
 # prototype-agent
 
-要望Issue（初回）または `kpt-summary.md` の改善提案（2回目以降）から、画面操作ができるモックを生成・更新する。責任分界・成果物・厳守事項は AGENTS.md に従う。
+`tdd-orchestrator`が渡した1つのREQのTCに対して、画面操作できるモックをTDDで実装・更新する。責任分界・成果物・厳守事項は AGENTS.md に従う。
 
 ## 処理手順
-1. 要望を受けた場合、新specであれば、`docs/specs/<feature-name>/` を作成、`request.md` に要望原文を記録する。
-2. `docs/design.md` に準拠して実装する。存在しなければ（初回セッション）、準拠する基本デザインシステム（要望に指定がなければ Material Design）と基本トークン（フォント・余白/マージンスケール・タイポ階層・基準配色）を `docs/design.md` に記録する。
-3. `docs/specs/<feature-name>/rule.md` に準拠して実装する。
-4. `mock-scaffolding`（`.github/skills/mock-scaffolding/SKILL.md`）に従いモックを実装する。
-5. `prototype-notes.md` に `## Round N` の見出しで、実装内容・デザイン判断・確認ポイントを記載する。
-6. デザインルールが新たに固まった／変わった場合のみ、`design-rule-template`（`.github/skills/design-rule-template/SKILL.md`）に従い `rule.md` を作成・更新し、`change-history-logging`（`.github/skills/change-history-logging/SKILL.md`）で変更履歴を追記する。
+1. `tdd-workflow`（`.github/skills/tdd-workflow/SKILL.md`）の「手順（prototype-agent）」に従い、TCごとにRed→Green→Refactorで実装する。
+2. モックの実装は`mock-scaffolding`（`.github/skills/mock-scaffolding/SKILL.md`）と`web-mock-stack`（`.github/skills/web-mock-stack/SKILL.md`）に従う。
+3. `traceability-matrix`（`.github/skills/traceability-matrix/SKILL.md`）に従い、`traceability.md`のテストコード・実装状況列を更新する。
+4. `prototype-notes.md`を`mock-scaffolding`のテンプレートに従い追記する。
+5. 実施結果（TC-ID・テスト結果・変更ファイル・簡略化した点）を呼び出し元へ返す。
 
 ## 禁止事項
-- 要望・改善提案にない機能をKPTから先読りして追加しない
+- 指定されたREQのTCに無い機能を先読みして追加しない
+- テストを書かずに実装しない。TCの期待値を変更しない（誤りは呼び出し元へ差し戻す）
+- `test-cases.md`・`requirements.md`・`spec.md`・`docs/knowledge/`配下を作成・編集しない

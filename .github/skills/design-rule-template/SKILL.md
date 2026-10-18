@@ -1,31 +1,8 @@
 ---
 name: design-rule-template
-description: 機能独自のデザインルール rule.md のフォーマット定義。prototype-agent が rule.md を生成・更新するときに使う。
+description: 廃止済み。機能独自のデザインルールは docs/knowledge/design/rules/<feature-name>/ 配下のOKF concept（design-rule）として okf-knowledge スキルに従い記録する。
 ---
 
-# skill: design-rule-template
+# skill: design-rule-template（廃止）
 
-機能独自のデザインルール（`rule.md`）のフォーマット定義。見た目・操作感のルールのみを記録し、特定のデザインツール記法に依存しないMarkdown見出し構造のみを使う。`docs/design.md`（基本デザインシステム）も同じ見出し構造を流用できる。
-
-## テンプレート
-
-```markdown
-# Design Rules: <feature-name>
-
-## 適用範囲
-このルールがどの画面・コンポーネントに適用されるか
-
-## デザインルール
-見た目・操作感の確定ルールを一文ずつの短い箇条書きで列挙。例: 配色、余白、タイポ、コンポーネントの状態表現、遷移・アニメーション、文言トーン、アクセシビリティ基準。意図・理由の説明文は書かない
-
-## 基本ルールからの逸脱・例外
-`docs/design.md` から意図的に外している点のみを短く列挙する。理由・意図は書かない
-
-## 変更履歴
-| ラウンド | 日付 | 変更内容 |
-|---|---|---|
-```
-
-## 記載の原則
-- 各ルール項目は一文の短い箇条書きのみとする。「なぜそうするか」という意図・理由の説明文は書かない。
-- 各ルールには可能なら起因となった論点ID（例: `theme-2`）を根拠として添える。これは出典・トレーサビリティ目的であり、意図の説明ではない。
+このスキルは廃止されました。feature固有のデザインルールは`rule.md`ではなく、`docs/knowledge/design/rules/<feature-name>/`配下のOKF concept（`design-rule`）として記録します。フォーマット・記載原則は`.github/skills/okf-knowledge/SKILL.md`を参照してください。
